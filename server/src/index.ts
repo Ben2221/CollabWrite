@@ -99,8 +99,41 @@ async function bootstrap() {
 
   app.get('/api/boards', requireAuth, async (req: any, res: any) => {
     try {
-      const result = await pgPool.query('SELECT id, title, created_at FROM boards WHERE owner_id = $1 ORDER BY created_at DESC', [req.user.userId]);
+      const result = await pgPool.query(`
+        SELECT b.id, b.title, b.created_at, 'owner' as role
+        FROM boards b 
+        WHERE b.owner_id = $1
+        
+        UNION ALL
+        
+        SELECT b.id, b.title, bc.last_accessed as created_at, 'collaborator' as role
+        FROM boards b
+        JOIN board_collaborators bc ON b.id = bc.board_id
+        WHERE bc.user_id = $1 AND b.owner_id != $1
+        
+        ORDER BY created_at DESC
+      `, [req.user.userId]);
       res.json(result.rows);
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
+  app.post('/api/boards/:id/join', requireAuth, async (req: any, res: any) => {
+    try {
+      const boardId = req.params.id;
+      const userId = req.user.userId;
+      
+      // Upsert into board_collaborators
+      await pgPool.query(`
+        INSERT INTO board_collaborators (board_id, user_id, last_accessed)
+        VALUES ($1, $2, CURRENT_TIMESTAMP)
+        ON CONFLICT (board_id, user_id) 
+        DO UPDATE SET last_accessed = CURRENT_TIMESTAMP
+      `, [boardId, userId]);
+      
+      res.json({ success: true });
     } catch (e) {
       console.error(e);
       res.status(500).json({ error: 'Server error' });

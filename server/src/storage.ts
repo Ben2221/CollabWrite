@@ -48,6 +48,13 @@ export async function initStorage() {
         title VARCHAR NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS board_collaborators (
+        board_id VARCHAR REFERENCES boards(id) ON DELETE CASCADE,
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (board_id, user_id)
+      );
     `);
     isPgConnected = true;
     console.log('Connected to PostgreSQL');

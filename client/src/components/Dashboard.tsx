@@ -6,6 +6,7 @@ type Board = {
   id: string;
   title: string;
   created_at: string;
+  role: 'owner' | 'collaborator';
 };
 
 export function Dashboard() {
@@ -59,6 +60,9 @@ export function Dashboard() {
     }
   };
 
+  const myBoards = boards.filter(b => b.role === 'owner');
+  const sharedBoards = boards.filter(b => b.role === 'collaborator');
+
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '60px 30px', animation: 'fadeIn 0.5s ease-out' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '50px' }}>
@@ -99,21 +103,54 @@ export function Dashboard() {
           <button onClick={createBoard} className="premium-button" style={{ width: 'auto', padding: '12px 30px', marginTop: '10px' }}>Create Board</button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-          {boards.map((board, index) => (
-            <Link 
-              to={`/board/${board.id}`} 
-              key={board.id}
-              className="board-card"
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              <h3>{board.title}</h3>
-              <p>
-                <span style={{ opacity: 0.7 }}>📄</span>
-                {new Date(board.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-              </p>
-            </Link>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+          
+          {/* MY BOARDS SECTION */}
+          {myBoards.length > 0 && (
+            <div>
+              <h2 style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--text-main)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', marginBottom: '20px', fontSize: '1.25rem' }}>My Workspaces</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                {myBoards.map((board, index) => (
+                  <Link 
+                    to={`/board/${board.id}`} 
+                    key={board.id}
+                    className="board-card"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <h3>{board.title}</h3>
+                    <p>
+                      <span style={{ opacity: 0.7 }}>👑</span>
+                      Created {new Date(board.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SHARED WITH ME SECTION */}
+          {sharedBoards.length > 0 && (
+            <div>
+              <h2 style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px', marginBottom: '20px', fontSize: '1.25rem' }}>Shared with Me</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                {sharedBoards.map((board, index) => (
+                  <Link 
+                    to={`/board/${board.id}`} 
+                    key={board.id}
+                    className="board-card"
+                    style={{ animationDelay: `${index * 0.05}s`, borderColor: 'rgba(144, 78, 149, 0.4)' }}
+                  >
+                    <h3>{board.title}</h3>
+                    <p>
+                      <span style={{ opacity: 0.7 }}>👥</span>
+                      Last visited {new Date(board.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       )}
     </div>

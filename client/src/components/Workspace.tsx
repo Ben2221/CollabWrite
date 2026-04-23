@@ -1,14 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Editor } from './Editor';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Workspace() {
   const [markdown, setMarkdown] = useState('');
   const { id } = useParams<{ id: string }>();
+  const { token } = useAuth();
 
   // Use a fallback just in case, though the route matches /board/:id
   const boardId = id || 'default';
+  
+  useEffect(() => {
+    if (!token || !boardId || boardId === 'default') return;
+    
+    // Register that this user has accessed the board
+    fetch(`https://collabwrite-ufp0.onrender.com/api/boards/${boardId}/join`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).catch(console.error);
+  }, [boardId, token]);
 
   return (
     <div className="app-container">
