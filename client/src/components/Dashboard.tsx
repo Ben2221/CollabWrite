@@ -60,22 +60,27 @@ export function Dashboard() {
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '50px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '60px 30px', animation: 'fadeIn 0.5s ease-out' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '50px' }}>
         <div>
-          <h1 style={{ color: '#c9d1d9', margin: 0 }}>Welcome, {user?.username}</h1>
-          <p style={{ color: '#8b949e', margin: '5px 0 0 0' }}>Your Collaborative Boards</p>
+          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.5rem', margin: '0 0 8px 0' }}>
+            Welcome, <span className="gradient-text">{user?.username}</span>
+          </h1>
+          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '1.1rem' }}>Manage your collaborative workspaces</p>
         </div>
-        <div>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <button 
             onClick={createBoard}
-            style={{ padding: '8px 16px', backgroundColor: '#238636', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', marginRight: '10px' }}
+            className="premium-button"
+            style={{ width: 'auto', padding: '12px 24px' }}
           >
-            + New Board
+            <span style={{ marginRight: '8px' }}>+</span> New Board
           </button>
           <button 
             onClick={() => { logout(); navigate('/login'); }}
-            style={{ padding: '8px 16px', backgroundColor: 'transparent', color: '#ff7b72', border: '1px solid #ff7b72', borderRadius: '4px', cursor: 'pointer' }}
+            style={{ padding: '12px 24px', backgroundColor: 'rgba(255,123,114,0.1)', color: 'var(--error)', border: '1px solid rgba(255,123,114,0.3)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontFamily: 'Outfit', fontWeight: 600, transition: 'all 0.2s' }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,123,114,0.2)'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,123,114,0.1)'}
           >
             Logout
           </button>
@@ -83,24 +88,29 @@ export function Dashboard() {
       </div>
 
       {loading ? (
-        <p style={{ color: '#8b949e' }}>Loading boards...</p>
+        <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <p>Loading your workspaces...</p>
+        </div>
       ) : boards.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '50px', border: '1px dashed #30363d', borderRadius: '8px', color: '#8b949e' }}>
-          No boards found. Create your first board to get started!
+        <div className="premium-card" style={{ textAlign: 'center', padding: '80px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+          <div style={{ fontSize: '48px', opacity: 0.5 }}>📝</div>
+          <h2 style={{ fontFamily: 'Outfit', margin: 0, color: 'var(--text-main)' }}>No boards yet</h2>
+          <p style={{ color: 'var(--text-muted)', margin: 0 }}>Create your first board to start collaborating with others in real-time.</p>
+          <button onClick={createBoard} className="premium-button" style={{ width: 'auto', padding: '12px 30px', marginTop: '10px' }}>Create Board</button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-          {boards.map(board => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+          {boards.map((board, index) => (
             <Link 
               to={`/board/${board.id}`} 
               key={board.id}
-              style={{ display: 'block', padding: '20px', backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '8px', textDecoration: 'none', transition: 'border-color 0.2s' }}
-              onMouseOver={(e) => e.currentTarget.style.borderColor = '#8b949e'}
-              onMouseOut={(e) => e.currentTarget.style.borderColor = '#30363d'}
+              className="board-card"
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <h3 style={{ color: '#58a6ff', margin: '0 0 10px 0' }}>{board.title}</h3>
-              <p style={{ color: '#8b949e', margin: 0, fontSize: '12px' }}>
-                Created: {new Date(board.created_at).toLocaleDateString()}
+              <h3>{board.title}</h3>
+              <p>
+                <span style={{ opacity: 0.7 }}>📄</span>
+                {new Date(board.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
               </p>
             </Link>
           ))}

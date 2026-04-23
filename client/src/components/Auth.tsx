@@ -42,48 +42,52 @@ export function Auth() {
   };
 
   return (
-    <div className="auth-container" style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', backgroundColor: '#0d1117', borderRadius: '8px', border: '1px solid #30363d' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#c9d1d9' }}>
-        {isLogin ? 'Login to CollabWrite' : 'Create an Account'}
-      </h2>
-      
-      {error && <div style={{ color: '#ff7b72', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
-      
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <input 
-          type="text" 
-          placeholder="Username" 
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #30363d', backgroundColor: '#010409', color: '#c9d1d9' }}
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: '10px', borderRadius: '4px', border: '1px solid #30363d', backgroundColor: '#010409', color: '#c9d1d9' }}
-        />
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ padding: '10px', backgroundColor: '#238636', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
-        </button>
-      </form>
-      
-      <p style={{ textAlign: 'center', marginTop: '20px', color: '#8b949e' }}>
-        {isLogin ? "Don't have an account? " : "Already have an account? "}
-        <button 
-          onClick={() => setIsLogin(!isLogin)}
-          style={{ background: 'none', border: 'none', color: '#58a6ff', cursor: 'pointer' }}
-        >
-          {isLogin ? 'Sign Up' : 'Login'}
-        </button>
-      </p>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', padding: '20px' }}>
+      <div className="premium-card" style={{ width: '100%', maxWidth: '420px', animation: 'fadeIn 0.5s ease-out' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '30px', fontFamily: 'Outfit, sans-serif' }}>
+          <span className="gradient-text">{isLogin ? 'Welcome Back' : 'Create an Account'}</span>
+        </h2>
+        
+        {error && <div style={{ color: 'var(--error)', marginBottom: '20px', textAlign: 'center', backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>{error}</div>}
+        
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <input 
+            type="text" 
+            placeholder="Username" 
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="premium-input"
+          />
+          <input 
+            type="password" 
+            placeholder="Password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="premium-input"
+          />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="premium-button"
+            style={{ marginTop: '10px' }}
+          >
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign Up')}
+          </button>
+        </form>
+        
+        <p style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-muted)' }}>
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button 
+            type="button"
+            onClick={() => { setIsLogin(!isLogin); setError(''); }}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-hover)', cursor: 'pointer', fontFamily: 'Inter', fontWeight: 600, fontSize: '0.95rem' }}
+          >
+            {isLogin ? 'Sign Up' : 'Login'}
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
