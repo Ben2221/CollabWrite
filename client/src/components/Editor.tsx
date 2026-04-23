@@ -60,7 +60,7 @@ export function Editor({ onTextChange }: { onTextChange: (text: string) => void 
     if (!containerRef.current) return;
 
     // Connect to Backend Socket.io
-    const socket = io('http://localhost:3001');
+    const socket = io('https://collabwrite-ufp0.onrender.com');
 
     // Setup Yjs Document
     const ydoc = new Y.Doc();
@@ -73,7 +73,7 @@ export function Editor({ onTextChange }: { onTextChange: (text: string) => void 
 
     // Custom Socket.io provider
     const provider = new SocketIOProvider(socket, 'default', ydoc);
-    
+
     // Configure user awareness
     const userColors = ['#ff7b72', '#79c0ff', '#d2a8ff', '#a5d6ff', '#ffa657', '#3fb950'];
     provider.awareness.setLocalStateField('user', {
