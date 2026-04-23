@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +11,9 @@ export function Auth() {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +36,7 @@ export function Auth() {
       }
 
       login(data.token, { userId: data.userId, username: data.username });
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err: any) {
       setError(err.message);
     } finally {
