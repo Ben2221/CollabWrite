@@ -52,7 +52,7 @@ const myHighlightStyle = HighlightStyle.define([
   { tag: tags.invalid, color: "#f85149" },
 ]);
 
-export function Editor({ onTextChange }: { onTextChange: (text: string) => void }) {
+export function Editor({ boardId, onTextChange }: { boardId: string, onTextChange: (text: string) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [synced, setSynced] = useState(false);
 
@@ -71,8 +71,8 @@ export function Editor({ onTextChange }: { onTextChange: (text: string) => void 
       onTextChange(ytext.toString());
     });
 
-    // Custom Socket.io provider
-    const provider = new SocketIOProvider(socket, 'default', ydoc);
+    // Custom Socket.io provider with boardId
+    const provider = new SocketIOProvider(socket, boardId, ydoc);
 
     // Configure user awareness
     const userColors = ['#ff7b72', '#79c0ff', '#d2a8ff', '#a5d6ff', '#ffa657', '#3fb950'];

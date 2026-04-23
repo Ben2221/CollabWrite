@@ -35,6 +35,19 @@ export async function initStorage() {
         id VARCHAR PRIMARY KEY,
         document_state BYTEA
       );
+      
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        username VARCHAR UNIQUE NOT NULL,
+        password_hash VARCHAR NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS boards (
+        id VARCHAR PRIMARY KEY,
+        owner_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        title VARCHAR NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     isPgConnected = true;
     console.log('Connected to PostgreSQL');
