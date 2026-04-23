@@ -102,14 +102,14 @@ async function bootstrap() {
       const result = await pgPool.query(`
         SELECT b.id, b.title, b.created_at, 'owner' as role
         FROM boards b 
-        WHERE b.owner_id = $1
+        WHERE b.owner_id = $1::uuid
         
         UNION ALL
         
         SELECT b.id, b.title, bc.last_accessed as created_at, 'collaborator' as role
         FROM boards b
         JOIN board_collaborators bc ON b.id = bc.board_id
-        WHERE bc.user_id = $1 AND b.owner_id != $1
+        WHERE bc.user_id = $1::uuid AND (b.owner_id != $1::uuid OR b.owner_id IS NULL)
         
         ORDER BY created_at DESC
       `, [req.user.userId]);

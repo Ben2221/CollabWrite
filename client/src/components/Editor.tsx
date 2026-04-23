@@ -52,9 +52,10 @@ const myHighlightStyle = HighlightStyle.define([
   { tag: tags.invalid, color: "#f85149" },
 ]);
 
-export function Editor({ boardId, onTextChange }: { boardId: string, onTextChange: (text: string) => void }) {
+export function Editor({ boardId, username, onTextChange }: { boardId: string, username: string, onTextChange: (text: string) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [synced, setSynced] = useState(false);
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -77,9 +78,20 @@ export function Editor({ boardId, onTextChange }: { boardId: string, onTextChang
     // Configure user awareness
     const userColors = ['#ff7b72', '#79c0ff', '#d2a8ff', '#a5d6ff', '#ffa657', '#3fb950'];
     provider.awareness.setLocalStateField('user', {
-      name: `User ${Math.floor(Math.random() * 1000)}`,
+      name: username,
       color: userColors[Math.floor(Math.random() * userColors.length)],
       colorLight: userColors[Math.floor(Math.random() * userColors.length)] + '55'
+    });
+
+    provider.awareness.on('change', () => {
+      const states = provider.awareness.getStates();
+      const users: string[] = [];
+      states.forEach((state: any) => {
+        if (state.user && state.user.name) {
+          users.push(state.user.name);
+        }
+      });
+      setActiveUsers(users);
     });
 
     socket.on('connect', () => {
@@ -131,8 +143,13 @@ export function Editor({ boardId, onTextChange }: { boardId: string, onTextChang
 
   return (
     <div className="editor-wrapper">
-      <div className="status-bar">
-        <span>●</span> {synced ? 'Connected (Synced)' : 'Connecting...'}
+      <div className="status-bar" style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div><span>●</span> {synced ? 'Connected (Synced)' : 'Connecting...'}</div>
+        {activeUsers.length > 0 && (
+          <div style={{ color: 'var(--text-main)', opacity: 0.8, fontSize: '0.9rem' }}>
+            👥 Online: {activeUsers.join(', ')}
+          </div>
+        )}
       </div>
       <div className="editor-container" ref={containerRef}></div>
     </div>

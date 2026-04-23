@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 export function Workspace() {
   const [markdown, setMarkdown] = useState('');
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   // Use a fallback just in case, though the route matches /board/:id
   const boardId = id || 'default';
@@ -57,7 +57,7 @@ export function Workspace() {
             <h2>Markdown Input</h2>
           </div>
           <div className="pane-content">
-            <Editor boardId={boardId} onTextChange={setMarkdown} />
+            <Editor boardId={boardId} username={user?.username || 'Guest'} onTextChange={setMarkdown} />
           </div>
         </div>
 
