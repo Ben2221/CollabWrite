@@ -22,7 +22,14 @@ function AppContent() {
           </ProtectedRoute>
         } 
       />
-      <Route path="/board/:id" element={<Workspace />} />
+      <Route 
+        path="/board/:id" 
+        element={
+          <ProtectedRoute>
+            <Workspace />
+          </ProtectedRoute>
+        } 
+      />
     </Routes>
   );
 }
