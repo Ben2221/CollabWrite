@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS documents (
+  id VARCHAR PRIMARY KEY,
+  document_state BYTEA
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username VARCHAR UNIQUE NOT NULL,
+  password_hash VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS boards (
+  id VARCHAR PRIMARY KEY,
+  owner_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  title VARCHAR NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS board_collaborators (
+  board_id VARCHAR REFERENCES boards(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (board_id, user_id)
+);
