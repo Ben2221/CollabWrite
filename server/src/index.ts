@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -11,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key-for-dev';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 const activeDocs = new Map<string, Y.Doc>();
 
@@ -39,7 +41,7 @@ async function bootstrap() {
   await initStorage();
   
   const app = express();
-  app.use(cors());
+  app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
   app.use(express.json()); // For parsing application/json
   
   // API Routes
@@ -156,7 +158,7 @@ async function bootstrap() {
   
   const io = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin: CLIENT_ORIGIN,
       methods: ["GET", "POST"]
     }
   });

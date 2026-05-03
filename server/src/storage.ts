@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { Pool } from 'pg';
+import { Pool, type PoolConfig } from 'pg';
 import * as Y from 'yjs';
 
 // Redis Client for caching doc state
@@ -12,10 +12,15 @@ export const redisClient = createClient({
 
 redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
+const connectionString = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL || 'postgresql://user:password@localhost:5432/collab_editor';
+const poolConfig: PoolConfig = { connectionString };
+
+if (process.env.SUPABASE_DB_URL || /sslmode=require|ssl=true|sslmode=prefer/i.test(connectionString)) {
+  poolConfig.ssl = { rejectUnauthorized: false };
+}
+
 // Postgres Pool for durable storage
-export const pgPool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/collab_editor'
-});
+export const pgPool = new Pool(poolConfig);
 
 export let isRedisConnected = false;
 export let isPgConnected = false;

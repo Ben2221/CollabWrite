@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { buildApiUrl } from '../api';
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,7 +24,7 @@ export function Auth() {
     const endpoint = isLogin ? '/api/login' : '/api/register';
     
     try {
-      const res = await fetch(`https://collabwrite-ufp0.onrender.com${endpoint}`, {
+      const res = await fetch(buildApiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

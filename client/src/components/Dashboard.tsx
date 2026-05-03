@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { buildApiUrl } from '../api';
 
 type Board = {
   id: string;
@@ -21,7 +22,7 @@ export function Dashboard() {
 
   const fetchBoards = async () => {
     try {
-      const res = await fetch('https://collabwrite-ufp0.onrender.com/api/boards', {
+      const res = await fetch(buildApiUrl('/api/boards'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -42,7 +43,7 @@ export function Dashboard() {
     if (!title) return;
 
     try {
-      const res = await fetch('https://collabwrite-ufp0.onrender.com/api/boards', {
+      const res = await fetch(buildApiUrl('/api/boards'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -49,10 +49,13 @@ exports.redisClient = (0, redis_1.createClient)({
     }
 });
 exports.redisClient.on('error', (err) => console.log('Redis Client Error', err));
+const connectionString = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL || 'postgresql://user:password@localhost:5432/collab_editor';
+const poolConfig = { connectionString };
+if (process.env.SUPABASE_DB_URL || /sslmode=require|ssl=true|sslmode=prefer/i.test(connectionString)) {
+    poolConfig.ssl = { rejectUnauthorized: false };
+}
 // Postgres Pool for durable storage
-exports.pgPool = new pg_1.Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://user:password@localhost:5432/collab_editor'
-});
+exports.pgPool = new pg_1.Pool(poolConfig);
 exports.isRedisConnected = false;
 exports.isPgConnected = false;
 async function initStorage() {

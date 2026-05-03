@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { Editor } from './Editor';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { buildApiUrl } from '../api';
 
 export function Workspace() {
   const [markdown, setMarkdown] = useState('');
@@ -16,7 +17,7 @@ export function Workspace() {
     if (!token || !boardId || boardId === 'default') return;
     
     // Register that this user has accessed the board
-    fetch(`https://collabwrite-ufp0.onrender.com/api/boards/${boardId}/join`, {
+    fetch(buildApiUrl(`/api/boards/${boardId}/join`), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -9,6 +9,7 @@ import * as Y from 'yjs';
 import { yCollab } from 'y-codemirror.next';
 import { io } from 'socket.io-client';
 import { SocketIOProvider } from '../y-socket-provider';
+import { getSocketUrl } from '../api';
 
 // Dark Mode Theme
 const myTheme = EditorView.theme({
@@ -61,7 +62,7 @@ export function Editor({ boardId, username, onTextChange }: { boardId: string, u
     if (!containerRef.current) return;
 
     // Connect to Backend Socket.io
-    const socket = io('https://collabwrite-ufp0.onrender.com');
+    const socket = io(getSocketUrl());
 
     // Setup Yjs Document
     const ydoc = new Y.Doc();

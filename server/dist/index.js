@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
@@ -48,6 +49,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const uuid_1 = require("uuid");
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-default-key-for-dev';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const activeDocs = new Map();
 async function getOrLoadDoc(docId) {
     if (activeDocs.has(docId)) {
@@ -72,7 +74,7 @@ setInterval(async () => {
 async function bootstrap() {
     await (0, storage_1.initStorage)();
     const app = (0, express_1.default)();
-    app.use((0, cors_1.default)());
+    app.use((0, cors_1.default)({ origin: CLIENT_ORIGIN, credentials: true }));
     app.use(express_1.default.json()); // For parsing application/json
     // API Routes
     app.post('/api/register', async (req, res) => {
@@ -133,14 +135,14 @@ async function bootstrap() {
             const result = await storage_1.pgPool.query(`
         SELECT b.id, b.title, b.created_at, 'owner' as role
         FROM boards b 
-        WHERE b.owner_id = $1
+        WHERE b.owner_id = $1::uuid
         
         UNION ALL
         
         SELECT b.id, b.title, bc.last_accessed as created_at, 'collaborator' as role
         FROM boards b
         JOIN board_collaborators bc ON b.id = bc.board_id
-        WHERE bc.user_id = $1 AND b.owner_id != $1
+        WHERE bc.user_id = $1::uuid AND (b.owner_id != $1::uuid OR b.owner_id IS NULL)
         
         ORDER BY created_at DESC
       `, [req.user.userId]);
@@ -184,7 +186,7 @@ async function bootstrap() {
     const httpServer = (0, http_1.createServer)(app);
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: "*",
+            origin: CLIENT_ORIGIN,
             methods: ["GET", "POST"]
         }
     });
